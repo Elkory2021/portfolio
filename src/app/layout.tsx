@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from '@/lib/theme-provider'
 import { ConfigProvider } from '@/lib/config-provider'
 import Navigation from '@/components/Navigation'
@@ -74,6 +75,7 @@ export default function RootLayout({
             <AdminPanel />
           </ConfigProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
