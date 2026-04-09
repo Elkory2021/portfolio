@@ -1,0 +1,41 @@
+{
+  "name": "Mohamed Elkory",
+  "title": "Full Stack Developer",
+  "tagline": "A passionate Full Stack Developer crafting exceptional digital experiences",
+  "email": "hello@example.com",
+  "github": "https://github.com",
+  "linkedin": "https://linkedin.com",
+  "twitter": "https://twitter.com",
+  "about": {
+    "story": [
+      "I'm a passionate Full Stack Developer with a keen eye for design and a commitment to building exceptional digital experiences. My journey began with curiosity for how websites work, and it has evolved into a career dedicated to creating intuitive, performant, and beautiful applications.",
+      "I specialize in modern web technologies, with a focus on React, Next.js, and cloud infrastructure. I believe in writing clean, maintainable code and continuously learning new technologies to stay at the forefront of web development.",
+      "When I'm not coding, you'll find me exploring new frameworks, contributing to open-source projects, or sharing knowledge with the developer community."
+    ],
+    "skills": [
+      "JavaScript/TypeScript",
+      "React/Next.js",
+      "Node.js",
+      "Python",
+      "PostgreSQL",
+      "MongoDB",
+      "Tailwind CSS",
+      "AWS"
+    ],
+    "experience": [
+      { "year": "2024", "title": "Senior Developer", "company": "Tech Corp" },
+      { "year": "2022", "title": "Full Stack Developer", "company": "Startup Inc" },
+      { "year": "2020", "title": "Frontend Developer", "company": "Web Agency" }
+    ]
+  },
+  "now": {
+    "learning": "Deepening my knowledge of server components and advanced Next.js patterns",
+    "focus": "Building scalable applications and improving system design skills",
+    "exploring": "AI/ML integration in web applications and edge computing"
+  },
+  "background": {
+    "image": "/background.jpg",
+    "blur": 3,
+    "opacity": 0.1
+  }
+}
