@@ -2,9 +2,11 @@
 
 import { motion } from 'framer-motion'
 import { Calendar, ArrowRight } from 'lucide-react'
-import { blogPosts } from '@/lib/blog-posts'
+import { useConfig } from '@/lib/config-provider'
 
 export default function Blog() {
+  const { config } = useConfig()
+
   return (
     <section id="blog" className="py-24 px-6">
       <div className="max-w-6xl mx-auto">
@@ -20,7 +22,7 @@ export default function Blog() {
         </motion.div>
 
         <div className="space-y-8">
-          {blogPosts.map((post, index) => (
+          {config.blogPosts?.map((post, index) => (
             <motion.article
               key={post.slug}
               initial={{ opacity: 0, y: 20 }}

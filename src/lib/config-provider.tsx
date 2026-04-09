@@ -2,7 +2,26 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 
-interface ProfileConfig {
+export interface Project {
+  id: string
+  title: string
+  description: string
+  techStack: string[]
+  github?: string
+  liveDemo?: string
+  gradient: string
+}
+
+export interface BlogPost {
+  slug: string
+  title: string
+  date: string
+  excerpt: string
+  category: string
+  content: string
+}
+
+export interface ProfileConfig {
   name: string
   title: string
   tagline: string
@@ -25,6 +44,8 @@ interface ProfileConfig {
     blur: number
     opacity: number
   }
+  projects: Project[]
+  blogPosts: BlogPost[]
 }
 
 const defaultConfig: ProfileConfig = {
@@ -57,12 +78,44 @@ const defaultConfig: ProfileConfig = {
     image: "/background.jpg",
     blur: 3,
     opacity: 0.1
-  }
+  },
+  projects: [
+    {
+      id: '1',
+      title: 'E-Commerce Platform',
+      description: 'A full-featured online shopping platform with cart functionality, user authentication, and payment integration.',
+      techStack: ['Next.js', 'TypeScript', 'Stripe', 'PostgreSQL'],
+      github: 'https://github.com',
+      liveDemo: 'https://example.com',
+      gradient: 'from-blue-500 to-cyan-500'
+    },
+    {
+      id: '2',
+      title: 'Task Management App',
+      description: 'Collaborative task management tool with real-time updates and team workspaces.',
+      techStack: ['React', 'Node.js', 'Socket.io', 'MongoDB'],
+      github: 'https://github.com',
+      liveDemo: 'https://example.com',
+      gradient: 'from-purple-500 to-pink-500'
+    }
+  ],
+  blogPosts: [
+    {
+      slug: 'mastering-typescript-generics',
+      title: 'Mastering TypeScript Generics: A Deep Dive',
+      date: '2024-03-15',
+      excerpt: 'Learn how to write more flexible and reusable code using TypeScript generics.',
+      category: 'TypeScript',
+      content: '## Introduction\n\nTypeScript generics are powerful...'
+    }
+  ]
 }
 
 interface ConfigContextType {
   config: ProfileConfig
   updateConfig: (updates: Partial<ProfileConfig>) => void
+  updateProjects: (projects: Project[]) => void
+  updateBlogPosts: (posts: BlogPost[]) => void
   resetConfig: () => void
 }
 
@@ -75,7 +128,8 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const saved = localStorage.getItem('portfolio-config')
     if (saved) {
-      setConfig({ ...defaultConfig, ...JSON.parse(saved) })
+      const parsed = JSON.parse(saved)
+      setConfig({ ...defaultConfig, ...parsed })
     }
     setLoaded(true)
   }, [])
@@ -86,15 +140,24 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('portfolio-config', JSON.stringify(newConfig))
   }
 
+  const updateProjects = (projects: Project[]) => {
+    updateConfig({ projects })
+  }
+
+  const updateBlogPosts = (posts: BlogPost[]) => {
+    updateConfig({ blogPosts: posts })
+  }
+
   const resetConfig = () => {
     setConfig(defaultConfig)
     localStorage.removeItem('portfolio-config')
+    localStorage.removeItem('profile-position')
   }
 
   if (!loaded) return null
 
   return (
-    <ConfigContext.Provider value={{ config, updateConfig, resetConfig }}>
+    <ConfigContext.Provider value={{ config, updateConfig, updateProjects, updateBlogPosts, resetConfig }}>
       {children}
     </ConfigContext.Provider>
   )
@@ -107,5 +170,3 @@ export function useConfig() {
   }
   return context
 }
-
-export type { ProfileConfig }

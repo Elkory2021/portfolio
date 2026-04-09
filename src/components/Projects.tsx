@@ -2,9 +2,9 @@
 
 import { motion } from 'framer-motion'
 import { Github, ExternalLink } from 'lucide-react'
-import { projects, Project } from '@/lib/projects'
+import { useConfig } from '@/lib/config-provider'
 
-function ProjectCard({ project, index }: { project: Project; index: number }) {
+function ProjectCard({ project, index }: { project: any; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -13,7 +13,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="group bg-white dark:bg-surface-dark rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 card-hover"
     >
-      {/* Image Placeholder */}
       <div className={`h-48 bg-gradient-to-br ${project.gradient} relative overflow-hidden`}>
         <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
         <div className="absolute bottom-4 left-4 right-4">
@@ -21,7 +20,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-6">
         <h3 className="text-xl font-serif font-semibold mb-2 group-hover:text-accent transition-colors">
           {project.title}
@@ -30,9 +28,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           {project.description}
         </p>
 
-        {/* Tech Stack */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {project.techStack.map((tech) => (
+          {project.techStack?.map((tech: string) => (
             <span
               key={tech}
               className="px-3 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full"
@@ -42,7 +39,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           ))}
         </div>
 
-        {/* Links */}
         <div className="flex gap-4">
           {project.github && (
             <a
@@ -73,6 +69,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 }
 
 export default function Projects() {
+  const { config } = useConfig()
+
   return (
     <section id="work" className="py-24 px-6 bg-gray-50 dark:bg-surface-dark/30">
       <div className="max-w-6xl mx-auto">
@@ -88,7 +86,7 @@ export default function Projects() {
         </motion.div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
+          {config.projects?.map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
