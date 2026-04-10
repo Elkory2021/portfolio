@@ -10,6 +10,7 @@ import {
 import { useConfig, Project, BlogPost, MediaItem } from '@/lib/config-provider'
 import { useAuthStore } from '@/lib/auth-store'
 import { useLanguage } from '@/lib/language-provider'
+import FileUploader from './FileUploader'
 import Image from 'next/image'
 
 type Tab = 'general' | 'about' | 'projects' | 'blog' | 'media' | 'products' | 'store' | 'settings'
@@ -451,62 +452,9 @@ export default function AdminPanel() {
                 </div>
               )}
 
-              {/* Media Tab */}
+              {/* Media Tab - Using FileUploader */}
               {activeTab === 'media' && (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-medium">Media Files ({tempConfig.media?.length || 0})</h3>
-                  </div>
-                  
-                  {/* Upload Section */}
-                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center">
-                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                    <p className="text-gray-500 mb-2">Upload files or add URLs</p>
-                    <div className="flex justify-center gap-2">
-                      <button
-                        onClick={() => {
-                          const url = prompt('Enter media URL:')
-                          if (url) {
-                            const title = prompt('Enter title:') || 'Media'
-                            const type = confirm('Is this a video?') ? 'video' : 
-                                       confirm('Is this audio?') ? 'audio' : 'image'
-                            const newMediaItem: MediaItem = { type: type as any, url, title }
-                            setTempConfig({ ...tempConfig, media: [...(tempConfig.media || []), newMediaItem] })
-                          }
-                        }}
-                        className="px-4 py-2 bg-accent text-white rounded-lg"
-                      >
-                        Add from URL
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Media List */}
-                  <div className="grid md:grid-cols-3 gap-4">
-                    {tempConfig.media?.map((item, i) => (
-                      <div key={i} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3">
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-2">
-                            {item.type === 'video' && <Play className="w-4 h-4 text-red-500" />}
-                            {item.type === 'audio' && <Play className="w-4 h-4 text-purple-500" />}
-                            {item.type === 'image' && <ImageIcon className="w-4 h-4 text-green-500" />}
-                            <span className="font-medium">{item.title}</span>
-                          </div>
-                          <button
-                            onClick={() => {
-                              const newMedia = tempConfig.media?.filter((_, idx) => idx !== i)
-                              setTempConfig({ ...tempConfig, media: newMedia })
-                            }}
-                            className="p-1 text-red-500"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1 truncate">{item.url}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <FileUploader />
               )}
 
               {/* Projects Tab */}

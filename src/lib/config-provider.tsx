@@ -53,7 +53,7 @@ export interface ProfileConfig {
   }
   projects: Project[]
   blogPosts: BlogPost[]
-  media: { type: 'image' | 'video' | 'audio'; url: string; title: string }[]
+  media: { type: 'image' | 'video' | 'audio' | 'document' | 'application'; url: string; title: string }[]
 }
 
 const defaultConfig: ProfileConfig = {
@@ -132,7 +132,7 @@ const defaultConfig: ProfileConfig = {
 }
 
 export interface MediaItem {
-  type: 'image' | 'video' | 'audio'
+  type: 'image' | 'video' | 'audio' | 'document' | 'application'
   url: string
   title: string
 }
