@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ThemeProvider } from '@/lib/theme-provider'
 import { ConfigProvider } from '@/lib/config-provider'
+import { LanguageProvider } from '@/lib/language-provider'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import AdminPanel from '@/components/AdminPanel'
@@ -65,14 +66,16 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen flex flex-col smooth-scroll">
         <ThemeProvider>
-          <ConfigProvider>
-            <Navigation />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-            <AdminPanel />
-          </ConfigProvider>
+          <LanguageProvider>
+            <ConfigProvider>
+              <Navigation />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+              <AdminPanel />
+            </ConfigProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

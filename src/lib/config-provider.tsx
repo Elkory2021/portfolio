@@ -25,20 +25,26 @@ export interface ProfileConfig {
   name: string
   title: string
   tagline: string
+  taglineAr?: string
   email: string
   github: string
   linkedin: string
   twitter: string
   adminPassword: string
+  language: 'en' | 'ar'
   about: {
     story: string[]
+    storyAr?: string[]
     skills: string[]
-    experience: { year: string; title: string; company: string }[]
+    experience: { year: string; title: string; titleAr?: string; company: string; companyAr?: string }[]
   }
   now: {
     learning: string
+    learningAr?: string
     focus: string
+    focusAr?: string
     exploring: string
+    exploringAr?: string
   }
   background: {
     image: string
@@ -54,6 +60,7 @@ const defaultConfig: ProfileConfig = {
   name: "Mohamed Elkory",
   title: "Full Stack Developer",
   tagline: "A passionate Full Stack Developer crafting exceptional digital experiences",
+  taglineAr: "مطورfull stack شغوف يبني تجارب رقمية استثنائية",
   email: "hello@example.com",
   github: "https://github.com",
   linkedin: "https://linkedin.com",
@@ -64,17 +71,25 @@ const defaultConfig: ProfileConfig = {
       "I specialize in modern web technologies, with a focus on React, Next.js, and cloud infrastructure.",
       "When I'm not coding, you'll find me exploring new frameworks or contributing to open-source projects."
     ],
+    storyAr: [
+      "أنا مطورFull Stack شغوف بتصميم وبناء تجارب رقمية استثنائية.",
+      "أتخصص في تقنيات الويب الحديثة، مع التركيز علىReact وNext.js والبنية السحابية.",
+      "عندما لا أبرمج، ستجدني أستكشف أُطرعمل جديدة أو أساهم في مشاريع مفتوحة المصدر."
+    ],
     skills: ["JavaScript/TypeScript", "React/Next.js", "Node.js", "Python", "PostgreSQL", "MongoDB", "Tailwind CSS", "AWS"],
     experience: [
-      { year: "2024", title: "Senior Developer", company: "Tech Corp" },
-      { year: "2022", title: "Full Stack Developer", company: "Startup Inc" },
-      { year: "2020", title: "Frontend Developer", company: "Web Agency" }
+      { year: "2024", title: "Senior Developer", titleAr: "مطور أول", company: "Tech Corp", companyAr: "تك كورب" },
+      { year: "2022", title: "Full Stack Developer", titleAr: "مطورFull Stack", company: "Startup Inc", companyAr: "ستارت اب" },
+      { year: "2020", title: "Frontend Developer", titleAr: "مطور واجهات", company: "Web Agency", companyAr: "وكالة ويب" }
     ]
   },
   now: {
     learning: "Deepening my knowledge of server components and advanced Next.js patterns",
+    learningAr: "تعميق معرفتي بمكونات الخادم وأنماطNext.js المتقدمة",
     focus: "Building scalable applications and improving system design skills",
-    exploring: "AI/ML integration in web applications and edge computing"
+    focusAr: "بناء تطبيقات قابلة للتطوير وتحسين مهاراتDiseño النظام",
+    exploring: "AI/ML integration in web applications and edge computing",
+    exploringAr: "استكشاف تكاملالذكاء الاصطناعي في تطبيقات الويب والحوسبة الطرفية"
   },
   background: {
     image: "/background.jpg",
@@ -112,6 +127,7 @@ const defaultConfig: ProfileConfig = {
     }
   ],
   adminPassword: '',
+  language: 'en',
   media: []
 }
 

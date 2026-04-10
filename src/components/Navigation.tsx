@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, Moon, Sun } from 'lucide-react'
+import { Menu, X, Moon, Sun, Languages } from 'lucide-react'
 import { useTheme } from '@/lib/theme-provider'
 import { useConfig } from '@/lib/config-provider'
+import { useLanguage } from '@/lib/language-provider'
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const { config } = useConfig()
+  const { language, setLanguage, t } = useLanguage()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -47,8 +49,23 @@ export default function Navigation() {
             {config.name}
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
+          <div className="hidden md:flex items-center gap-4">
+            {language === 'en' ? navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm font-medium hover:text-accent transition-colors relative group"
+              >
+                {link.label}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all group-hover:w-full" />
+              </Link>
+            )) : [
+              { href: '#about', label: 'من أنا' },
+              { href: '#work', label: 'أعمالي' },
+              { href: '#blog', label: 'المدونة' },
+              { href: '#media', label: 'الوسائط' },
+              { href: '#contact', label: 'تواصل معي' },
+            ].map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -60,19 +77,29 @@ export default function Navigation() {
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {mounted && (
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                aria-label="Toggle theme"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-5 h-5" />
-                ) : (
-                  <Moon className="w-5 h-5" />
-                )}
-              </button>
+              <>
+                <button
+                  onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-1 text-sm font-medium"
+                  aria-label="Toggle language"
+                >
+                  <Languages className="w-4 h-4" />
+                  {language === 'en' ? 'عربي' : 'EN'}
+                </button>
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  aria-label="Toggle theme"
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="w-5 h-5" />
+                  ) : (
+                    <Moon className="w-5 h-5" />
+                  )}
+                </button>
+              </>
             )}
 
             <button
