@@ -29,6 +29,7 @@ export default function Navigation() {
     { href: '#work', label: 'Work' },
     { href: '#blog', label: 'Blog' },
     { href: '#media', label: 'Media' },
+    { href: '#store', label: 'Store' },
     { href: '#contact', label: 'Contact' },
   ]
 
