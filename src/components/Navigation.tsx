@@ -26,6 +26,7 @@ export default function Navigation() {
     { href: '#about', label: 'About' },
     { href: '#work', label: 'Work' },
     { href: '#blog', label: 'Blog' },
+    { href: '#media', label: 'Media' },
     { href: '#contact', label: 'Contact' },
   ]
 

@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Save, RotateCcw, User, Folder, FileText, Image as ImageIcon, Plus, Trash2, GripVertical } from 'lucide-react'
-import { useConfig, Project, BlogPost } from '@/lib/config-provider'
+import { X, Save, RotateCcw, User, Folder, FileText, Image as ImageIcon, Plus, Trash2, GripVertical, Lock, LogOut, Upload, Play } from 'lucide-react'
+import { useConfig, Project, BlogPost, MediaItem } from '@/lib/config-provider'
 
-type Tab = 'general' | 'about' | 'projects' | 'blog' | 'now' | 'background'
+type Tab = 'general' | 'about' | 'projects' | 'blog' | 'media' | 'now' | 'background'
 
 const gradients = [
   'from-blue-500 to-cyan-500',
@@ -20,21 +20,39 @@ const gradients = [
 const categories = ['TypeScript', 'React', 'Next.js', 'Python', 'Learning', 'Tutorial', 'Opinion', 'General']
 
 export default function AdminPanel() {
-  const { config, updateConfig, updateProjects, updateBlogPosts, resetConfig } = useConfig()
+  const { config, updateConfig, updateProjects, updateBlogPosts, updateMedia, resetConfig, isAuthenticated, authenticate, logout } = useConfig()
   const [isOpen, setIsOpen] = useState(false)
+  const [showLogin, setShowLogin] = useState(false)
+  const [password, setPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
   const [activeTab, setActiveTab] = useState<Tab>('general')
   const [tempConfig, setTempConfig] = useState(config)
   const [expandedProject, setExpandedProject] = useState<string | null>(null)
   const [expandedBlog, setExpandedBlog] = useState<string | null>(null)
+  const [showPasswordChange, setShowPasswordChange] = useState(false)
 
   useEffect(() => {
     setTempConfig(config)
   }, [config])
 
+  const handleLogin = () => {
+    if (authenticate(password)) {
+      setShowLogin(false)
+      setLoginError('')
+    } else {
+      setLoginError('كلمة المرور غير صحيحة')
+    }
+  }
+
   const handleSave = () => {
+    // If password was changed, authenticate with the new password
+    if (password && password !== (config.adminPassword || '')) {
+      authenticate(password)
+    }
     updateConfig(tempConfig)
     updateProjects(tempConfig.projects)
     updateBlogPosts(tempConfig.blogPosts)
+    updateMedia(tempConfig.media)
     setIsOpen(false)
   }
 
@@ -43,19 +61,65 @@ export default function AdminPanel() {
     { id: 'about', label: 'عندي', icon: User },
     { id: 'projects', label: 'أعمالي', icon: Folder },
     { id: 'blog', label: 'المدونة', icon: FileText },
+    { id: 'media', label: 'الوسائط', icon: Play },
     { id: 'now', label: 'الآن', icon: FileText },
     { id: 'background', label: 'خلفية', icon: ImageIcon },
   ]
 
+  const handleButtonClick = () => {
+    if (isAuthenticated) {
+      setIsOpen(true)
+    } else {
+      setShowLogin(true)
+    }
+  }
+
   return (
     <div>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={handleButtonClick}
         className="fixed bottom-6 right-6 z-50 p-4 bg-accent text-white rounded-full shadow-lg hover:scale-110 transition-transform"
         aria-label="لوحة التحكم"
       >
-        <User className="w-5 h-5" />
+        {isAuthenticated ? <User className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
       </button>
+
+      {/* Login Modal */}
+      {showLogin && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-md p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">تسجيل الدخول</h2>
+              <button onClick={() => setShowLogin(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">كلمة المرور</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                  placeholder="أدخل كلمة المرور"
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                />
+                {loginError && <p className="text-red-500 text-sm mt-1">{loginError}</p>}
+              </div>
+              <p className="text-sm text-gray-500">
+                إذا لم تُضبط كلمة مرور بعد، أدخل كلمة مرور جديدة للإنشاء
+              </p>
+              <button
+                onClick={handleLogin}
+                className="w-full py-2 bg-accent text-white rounded-lg hover:bg-accent-hover"
+              >
+                دخول
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-2 sm:p-4">
@@ -153,6 +217,17 @@ export default function AdminPanel() {
                         className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
                       />
                     </div>
+                  </div>
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+                    <h4 className="font-medium mb-2">الأمان - تغيير كلمة المرور</h4>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      placeholder="أدخل كلمة المرور الجديدة للحفظ"
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">أدخل كلمة مرور جديدةواضغط حفظ لتحديثها</p>
                   </div>
                 </div>
               )}
@@ -523,10 +598,52 @@ export default function AdminPanel() {
                 </div>
               )}
 
+              {activeTab === 'media' && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-medium">الوسائط ({tempConfig.media?.length || 0})</h3>
+                    <button
+                      onClick={() => {
+                        const url = prompt('أدخل رابط الملف (صورة/فيديو/صوت):')
+                        if (url) {
+                          const title = prompt('أدخل عنوان الملف:') || 'ملف جديد'
+                          const type = confirm('هل هذا فيديو؟ (موافق = فيديو، إلغاء = صوت/image)') ? 'video' : 
+                                     confirm('هل هذا صورة؟ (موافق = صورة،取消 = صوت)') ? 'image' : 'audio'
+                          const newMedia: MediaItem = { type: type as 'image' | 'video' | 'audio', url, title }
+                          setTempConfig({ ...tempConfig, media: [...(tempConfig.media || []), newMedia] })
+                        }
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg"
+                    >
+                      <Plus className="w-4 h-4" /> إضافة ملف
+                    </button>
+                  </div>
+                  {tempConfig.media?.map((item, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        {item.type === 'video' && <Play className="w-4 h-4 text-red-500" />}
+                        {item.type === 'audio' && <Play className="w-4 h-4 text-blue-500" />}
+                        {item.type === 'image' && <ImageIcon className="w-4 h-4 text-green-500" />}
+                        <span>{item.title}</span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newMedia = tempConfig.media?.filter((_, idx) => idx !== i)
+                          setTempConfig({ ...tempConfig, media: newMedia })
+                        }}
+                        className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {activeTab === 'now' && (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">أ حالياً أدرس</label>
+                    <label className="block text-sm font-medium mb-1">أ actualmente أدرس</label>
                     <textarea
                       value={tempConfig.now.learning}
                       onChange={e => setTempConfig({ ...tempConfig, now: { ...tempConfig.now, learning: e.target.value } })}
@@ -594,12 +711,20 @@ export default function AdminPanel() {
             </div>
 
             <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-800">
-              <button
-                onClick={resetConfig}
-                className="flex items-center gap-2 text-gray-500 hover:text-gray-700"
-              >
-                <RotateCcw className="w-4 h-4" /> إعادة تعيين
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={resetConfig}
+                  className="flex items-center gap-2 text-gray-500 hover:text-gray-700"
+                >
+                  <RotateCcw className="w-4 h-4" /> إعادة تعيين
+                </button>
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 text-red-500 hover:text-red-700"
+                >
+                  <LogOut className="w-4 h-4" /> خروج
+                </button>
+              </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => setIsOpen(false)}

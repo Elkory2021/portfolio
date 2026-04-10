@@ -29,6 +29,7 @@ export interface ProfileConfig {
   github: string
   linkedin: string
   twitter: string
+  adminPassword: string
   about: {
     story: string[]
     skills: string[]
@@ -46,6 +47,7 @@ export interface ProfileConfig {
   }
   projects: Project[]
   blogPosts: BlogPost[]
+  media: { type: 'image' | 'video' | 'audio'; url: string; title: string }[]
 }
 
 const defaultConfig: ProfileConfig = {
@@ -108,7 +110,15 @@ const defaultConfig: ProfileConfig = {
       category: 'TypeScript',
       content: '## Introduction\n\nTypeScript generics are powerful...'
     }
-  ]
+  ],
+  adminPassword: '',
+  media: []
+}
+
+export interface MediaItem {
+  type: 'image' | 'video' | 'audio'
+  url: string
+  title: string
 }
 
 interface ConfigContextType {
@@ -116,7 +126,11 @@ interface ConfigContextType {
   updateConfig: (updates: Partial<ProfileConfig>) => void
   updateProjects: (projects: Project[]) => void
   updateBlogPosts: (posts: BlogPost[]) => void
+  updateMedia: (media: MediaItem[]) => void
   resetConfig: () => void
+  isAuthenticated: boolean
+  authenticate: (password: string) => boolean
+  logout: () => void
 }
 
 const ConfigContext = createContext<ConfigContextType | undefined>(undefined)
@@ -124,12 +138,18 @@ const ConfigContext = createContext<ConfigContextType | undefined>(undefined)
 export function ConfigProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<ProfileConfig>(defaultConfig)
   const [loaded, setLoaded] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
     const saved = localStorage.getItem('portfolio-config')
     if (saved) {
       const parsed = JSON.parse(saved)
       setConfig({ ...defaultConfig, ...parsed })
+    }
+    // Check if already authenticated in this session
+    const auth = sessionStorage.getItem('portfolio-auth')
+    if (auth === 'true') {
+      setIsAuthenticated(true)
     }
     setLoaded(true)
   }, [])
@@ -148,16 +168,52 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     updateConfig({ blogPosts: posts })
   }
 
+  const updateMedia = (media: MediaItem[]) => {
+    updateConfig({ media })
+  }
+
   const resetConfig = () => {
     setConfig(defaultConfig)
     localStorage.removeItem('portfolio-config')
     localStorage.removeItem('profile-position')
+    setIsAuthenticated(false)
+    sessionStorage.removeItem('portfolio-auth')
+  }
+
+  const authenticate = (password: string): boolean => {
+    // Check against stored password or empty (not set yet)
+    const storedPassword = config.adminPassword || localStorage.getItem('portfolio-admin-password')
+    if (!storedPassword || password === storedPassword) {
+      setIsAuthenticated(true)
+      sessionStorage.setItem('portfolio-auth', 'true')
+      if (!config.adminPassword && password) {
+        localStorage.setItem('portfolio-admin-password', password)
+        updateConfig({ adminPassword: password })
+      }
+      return true
+    }
+    return false
+  }
+
+  const logout = () => {
+    setIsAuthenticated(false)
+    sessionStorage.removeItem('portfolio-auth')
   }
 
   if (!loaded) return null
 
   return (
-    <ConfigContext.Provider value={{ config, updateConfig, updateProjects, updateBlogPosts, resetConfig }}>
+    <ConfigContext.Provider value={{ 
+      config, 
+      updateConfig, 
+      updateProjects, 
+      updateBlogPosts,
+      updateMedia,
+      resetConfig,
+      isAuthenticated,
+      authenticate,
+      logout
+    }}>
       {children}
     </ConfigContext.Provider>
   )
